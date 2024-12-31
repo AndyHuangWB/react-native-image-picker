@@ -506,7 +506,6 @@ CGImagePropertyOrientation CGImagePropertyOrientationForUIImageOrientation(UIIma
 
 - (void)picker:(PHPickerViewController *)picker didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14))
 {
-    [picker dismissViewControllerAnimated:YES completion:nil];
 
     if (photoSelected == YES) {
         return;
@@ -521,6 +520,11 @@ CGImagePropertyOrientation CGImagePropertyOrientationForUIImageOrientation(UIIma
     }
 
     dispatch_group_t completionGroup = dispatch_group_create();
+
+    dispatch_group_enter(completionGroup);
+    [picker dismissViewControllerAnimated:YES completion:^{
+        dispatch_group_leave(completionGroup);
+    }];
     NSMutableArray<NSDictionary *> *assets = [[NSMutableArray alloc] initWithCapacity:results.count];
     for (int i = 0; i < results.count; i++) {
         [assets addObject:(NSDictionary *)[NSNull null]];
